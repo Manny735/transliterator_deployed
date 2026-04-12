@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './App.css';
 import mappings from './data/mappings.json';
+import { fixWithAI } from './aiService';
 
 const letterMap = {
-  // Diphthongs / Special Combos
   'ch': 'ч', 'sh': 'ш', 'ts': 'ц', 'ye': 'е', 'yo': 'ё', 'yu': 'ю', 'ya': 'я',
   'ii': 'ий', 'oi': 'ой', 'ui': 'уй', 'wi': 'үй', 'qi': 'өй',
-  // Single Letters
   'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'e': 'э', 'z': 'з', 
   'i': 'и', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о', 'q': 'ө', 
   'p': 'п', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'w': 'ү', 'f': 'ф', 
@@ -34,6 +33,9 @@ function App() {
   const [activeMenu, setActiveMenu] = useState(null);
   const [selections, setSelections] = useState({});
   const [copyStatus, setCopyStatus] = useState('Copy Text');
+  const [aiStatus, setAiStatus] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiFixedOutput, setAiFixedOutput] = useState(null);
 
   useEffect(() => {
     const handleGlobalClick = () => setActiveMenu(null);
@@ -68,10 +70,22 @@ function App() {
     });
   }, [inputText, selections]);
 
-  // Function to copy the flat text from the output
+  const handleAiFix = async () => {
+    const currentCyrillic = translatedWords.map(w => w.value).join('');
+    setIsAiLoading(true);
+    try {
+        const result = await fixWithAI(currentCyrillic, setAiStatus);
+        if (result) setAiFixedOutput(result);
+    } catch (err) {
+        setAiStatus('API Connection Error');
+    } finally {
+        setIsAiLoading(false);
+    }
+  };
+
   const handleCopy = () => {
-    const fullText = translatedWords.map(w => w.value).join('');
-    navigator.clipboard.writeText(fullText).then(() => {
+    const textToCopy = aiFixedOutput || translatedWords.map(w => w.value).join('');
+    navigator.clipboard.writeText(textToCopy).then(() => {
       setCopyStatus('Copied!');
       setTimeout(() => setCopyStatus('Copy Text'), 2000);
     });
@@ -84,6 +98,7 @@ function App() {
         <div className="legend">
           <span className="dot orange"></span> Multiple Options 
           <span className="dot blue"></span> Letter-by-Letter
+          {aiStatus && <span className="ai-status"> ✨ {aiStatus}</span>}
         </div>
       </div>
 
@@ -94,52 +109,56 @@ function App() {
           value={inputText}
           onChange={(e) => {
             setInputText(e.target.value);
-            setActiveMenu(null);
-            if (e.target.value === "") setSelections({});
+            setAiFixedOutput(null);
+            setAiStatus('');
           }}
         />
 
         <div className="output-wrapper">
           <div className="output-container">
-            {translatedWords.map((word, i) => (
-              <span key={i} className="word-wrapper">
-                {word.type === 'multi' ? (
-                  <>
-                    <span 
-                      className="multi-match" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveMenu(activeMenu === i ? null : i);
-                      }}
-                    >
-                      {word.value}
-                    </span>
-                    {activeMenu === i && (
-                      <ul className="dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                        {word.options.map(opt => (
-                          <li key={opt} className="dropdown-item" onClick={() => {
-                            setSelections(prev => ({ ...prev, [word.id]: opt }));
-                            setActiveMenu(null);
-                          }}>
-                            {opt}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </>
-                ) : (
-                  <span className={word.type === 'fallback' ? 'fallback-match' : ''}>
-                    {word.value}
-                  </span>
-                )}
-              </span>
-            ))}
+            {aiFixedOutput ? (
+              <div className="ai-view">
+                <div className="ai-banner">AI View <button onClick={() => setAiFixedOutput(null)}>Undo</button></div>
+                {aiFixedOutput}
+              </div>
+            ) : (
+              translatedWords.map((word, i) => (
+                <span key={i} className="word-wrapper">
+                  {word.type === 'multi' ? (
+                    <>
+                      <span className="multi-match" onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === i ? null : i); }}>
+                        {word.value}
+                      </span>
+                      {activeMenu === i && (
+                        <ul className="dropdown-menu">
+                          {word.options.map(opt => (
+                            <li key={opt} className="dropdown-item" onClick={() => setSelections(prev => ({ ...prev, [word.id]: opt }))}>
+                              {opt}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </>
+                  ) : (
+                    <span className={word.type === 'fallback' ? 'fallback-match' : ''}>{word.value}</span>
+                  )}
+                </span>
+              ))
+            )}
           </div>
-          {inputText && (
-            <button className="copy-button" onClick={handleCopy}>
-              {copyStatus}
-            </button>
-          )}
+          
+          <div className="button-group">
+            {inputText && !aiFixedOutput && (
+              <button className="ai-button" onClick={handleAiFix} disabled={isAiLoading}>
+                {isAiLoading ? "Waiting..." : "✨ Test AI"}
+              </button>
+            )}
+            {inputText && (
+              <button className="copy-button" onClick={handleCopy}>
+                {copyStatus}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,32 +1,18 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background-color: #f1f3f5;
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.app-container {
-  width: 95%;
-  max-width: 1400px;
-  margin: 0 auto;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 0;
-}
-
 .header {
-  text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .legend {
-  font-size: 14px;
-  color: #495057;
-  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 10px;
 }
 
 .dot {
@@ -34,119 +20,95 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin: 0 5px 0 15px;
-}
-.orange { background: #ff922b; }
-.blue { background: #339af0; }
-
-.main-content {
-  display: flex;
-  justify-content: center;
-  flex: 1;
-  gap: 20px;
-  min-height: 500px;
-  overflow: hidden;
+  margin-right: 5px;
+  margin-left: 15px;
 }
 
-textarea, .output-wrapper {
-  width: 48%;
-  height: 100%;
-}
+.orange { background-color: #fd7e14; }
+.blue { background-color: #339af0; }
 
 textarea {
-  background: white;
-  border: 1px solid #ced4da;
-  border-radius: 12px;
-  padding: 30px;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  outline: none;
-  resize: none;
-  line-height: 1.6;
+  width: 100%;
+  height: 150px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
-/* Wrapper to hold container and button */
 .output-wrapper {
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
 .output-container {
-  flex: 1;
-  background: white;
-  border: 1px solid #ced4da;
-  border-radius: 12px;
-  padding: 30px;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  overflow-y: auto;
-  line-height: 2.5;
-  white-space: pre-wrap;
-  color: #212529;
-}
-
-.copy-button {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  padding: 10px 20px;
-  background-color: #339af0;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.copy-button:hover {
-  background-color: #228be6;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  font-size: 1.1rem;
+  line-height: 1.6;
 }
 
 .word-wrapper {
   position: relative;
   display: inline-block;
+  margin-right: 4px;
 }
 
 .multi-match {
-  background-color: #fff4e6;
-  border-bottom: 2px solid #ff922b; /* Subtle underline */
+  border-bottom: 2px solid #fd7e14;
   cursor: pointer;
-  padding: 0 2px;
-  border-radius: 2px;
-  font-weight: 400; /* Removed Bold */
 }
 
 .fallback-match {
-  color: #1c7ed6; /* Distinct Blue */
-  border-bottom: 2px dotted #a5d8ff;
+  border-bottom: 2px solid #339af0;
 }
 
 .dropdown-menu {
   position: absolute;
   top: 100%;
   left: 0;
+  z-index: 10;
   background: white;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  z-index: 9999;
-  border-radius: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   list-style: none;
-  padding: 6px 0;
-  margin-top: 5px;
-  min-width: 150px;
+  padding: 5px 0;
+  margin: 5px 0 0 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .dropdown-item {
-  padding: 12px 18px;
+  padding: 8px 15px;
   cursor: pointer;
-  font-size: 16px;
-  color: #333;
+  white-space: nowrap;
 }
 
-.dropdown-item:hover {
-  background-color: #ff922b;
-  color: white;
+.dropdown-item:hover { background-color: #f0f0f0; }
+
+.button-group {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }
+
+.copy-button, .ai-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.copy-button { background-color: #228be6; color: white; }
+.ai-button { background-color: #5c7cfa; color: white; }
+.ai-button:disabled { background-color: #adb5bd; cursor: not-allowed; }
+
+.ai-status { color: #5c7cfa; font-weight: bold; margin-left: 10px; }
+.ai-view { color: #2b8a3e; }
+.ai-banner { font-size: 0.8rem; color: #888; margin-bottom: 5px; }
+.ai-banner button { border: none; background: none; color: #5c7cfa; cursor: pointer; text-decoration: underline; }
