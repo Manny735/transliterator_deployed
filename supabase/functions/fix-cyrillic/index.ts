@@ -15,8 +15,8 @@ const SYSTEM_INSTRUCTION =
   "3. Return the FULL sentence in clean Cyrillic. Remove all brackets. Output ONLY the fixed text.";
 
 const GROQ_MODEL = "llama-3.3-70b-versatile";
-const DEFAULT_GOOGLE_MODEL = "gemini-2.5-flash-lite";
-const GOOGLE_FALLBACK_MODEL = "gemini-3-flash-preview";
+const DEFAULT_GOOGLE_MODEL = "gemini-3-flash-preview";
+const GOOGLE_FALLBACK_MODEL = "gemini-2.5-flash-lite";
 
 type Provider = "groq" | "google";
 

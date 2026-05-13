@@ -36,7 +36,7 @@ function App() {
   const [aiStatus, setAiStatus] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiFixedOutput, setAiFixedOutput] = useState(null);
-  const [aiModelSelection, setAiModelSelection] = useState('gemini-2.5-flash-lite');
+  const [aiModelSelection, setAiModelSelection] = useState('gemini-3-flash-preview');
   const [aiErrorDetails, setAiErrorDetails] = useState('');
   const [showAiErrorDetails, setShowAiErrorDetails] = useState(false);
   const [abortController, setAbortController] = useState(null);
@@ -191,16 +191,16 @@ function App() {
                   disabled={isAiLoading}
                   aria-label="AI model"
                 >
-                  <option value="gemini-2.5-flash-lite">
-                    Google: Gemini 2.5 Flash Lite
-                  </option>
-                  <option value="groq">Groq: Llama 3.3</option>
                   <option value="gemini-3-flash-preview">
                     Google: Gemini 3 Flash Preview
                   </option>
                   <option value="gemini-3.1-flash-lite-preview">
                     Google: Gemini 3.1 Flash Lite Preview
                   </option>
+                  <option value="gemini-2.5-flash-lite">
+                    Google: Gemini 2.5 Flash Lite
+                  </option>
+                  <option value="groq">Groq: Llama 3.3</option>
                 </select>
               </div>
             )}

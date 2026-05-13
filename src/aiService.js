@@ -19,7 +19,7 @@ const supabase =
 const SUPABASE_CONFIG_MESSAGE =
   "Supabase is not configured. Add your project URL/key and restart the app.";
 
-const DEFAULT_GOOGLE_MODEL_ID = "gemini-2.5-flash-lite";
+const DEFAULT_GOOGLE_MODEL_ID = "gemini-3-flash-preview";
 
 const MODEL_DEMAND_MESSAGE =
   "The model may be experiencing high demand. Please try again in a moment or switch to another model.";
