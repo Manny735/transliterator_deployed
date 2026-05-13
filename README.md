@@ -9,10 +9,12 @@ This web app converts **Latin-script Mongolian** into **Mongolian Cyrillic** usi
 [Your Vercel deployment URL]
 
 ## Screenshots
+<img width="1920" height="1080" alt="Screenshot 2026-05-14 011425" src="https://github.com/user-attachments/assets/d5354074-2db5-43f6-8573-2a8ad281baf2" />
 
-[Main transliteration view with Latin input and Cyrillic output — ]
+<img width="1920" height="1080" alt="Screenshot 2026-05-14 011234" src="https://github.com/user-attachments/assets/f1b26c72-70b9-4b0d-a758-508fedc1fbb8" />
 
-[Ambiguity dropdown or AI Fix flow — ]
+<img width="1920" height="1080" alt="Screenshot 2026-05-14 011455" src="https://github.com/user-attachments/assets/44b84ffa-8363-4d8f-83c0-de53dbf7948f" />
+
 
 ## Features
 
@@ -32,49 +34,25 @@ This web app converts **Latin-script Mongolian** into **Mongolian Cyrillic** usi
 
 ## Data Sources
 
-- **Latin → Cyrillic word mappings** — Bundled as `src/data/mappings.json` in this repository. [Original source or methodology link: ]
+- **Latin → Cyrillic word mappings** — Bundled as `src/data/mappings.json` in this repository.
 - **AI providers** — [Google AI / Gemini documentation: https://ai.google.dev/docs ] · [Groq API documentation: https://console.groq.com/docs ]
 
-## Setup / Running Locally
-
-1. **Clone** this repository and open a terminal in the project root.
-2. **Install dependencies:**  
-   `npm install`
-3. **Environment variables** — Create a `.env` file in the project root (do not commit it; it is listed in `.gitignore`):
-
-   ```env
-   VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-   VITE_SUPABASE_ANON_KEY=your_anon_public_key
-   ```
-
-   The **anon** key is safe for browser use. Groq and Gemini keys belong only in **Supabase Edge Function secrets** (`GROQ_API_KEY`, `GEMINI_API_KEY`), not in `.env` for the Vite app.
-
-4. **Supabase** — Deploy or use the existing `fix-cyrillic` function under `supabase/functions/fix-cyrillic/` and set the secrets above in the Supabase dashboard (or CLI).
-
-5. **Run the dev server:**  
-   `npm run dev`  
-   Then open the URL shown in the terminal (typically `http://localhost:5173`).
-
-6. **Production build (optional check):**  
-   `npm run build`  
-   Output is written to `dist/`. Preview locally with `npm run preview`.
 
 ## Known Issues
 
-- **Large JS bundle** — The mapping data increases the main chunk size; first load can be slow on poor networks.
 - **AI availability** — Preview model IDs and provider quotas can change; users may see rate-limit or high-demand errors until they retry or switch models.
-- **Edge function required for AI** — Without a configured Supabase project and deployed `fix-cyrillic` function, **AI Fix** will not work (dictionary transliteration still works).
+- **Edge function required for AI** — Without a configured Supabase project and deployed `fix-cyrillic` function, **AI Fix** will not work (dictionary transliteration still works), sometimes the AI fix may not work because of the supabase project being on a pause due to inactivity.
 
 ## Future Improvements
 
 - **Code-splitting / lazy loading** — Load `mappings.json` on demand or split chunks to reduce initial bundle size.
-- **Offline / PWA** — Cache the shell and mappings for faster repeat visits.
-- **Tests & CI** — Unit tests for transliteration helpers and smoke tests for the Edge Function contract.
-- **Accessibility & i18n** — Broader screen-reader labels and optional UI languages.
+- **Local open source model hosting** — hosting an open source model like gemma on a server or a local device for faster Ai fixing.
+- **mappings expansion** — adding more mappings to make the Ai fix more accurate.
+- **Mobile app integration** — Potentially turn this into a mobile keyboard app.
 
 ## Author
 
-[Your name]
+M.Mandakhbayar
 
 ---
 
