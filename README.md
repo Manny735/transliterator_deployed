@@ -4,9 +4,11 @@
 
 This web app converts **Latin-script Mongolian** into **Mongolian Cyrillic** using a large word-to-Cyrillic mapping, with visual cues when a word is ambiguous or only approximated. An optional **AI Fix** step sends a hybrid Cyrillic + bracketed-Latin prompt to a **Supabase Edge Function**, which calls **Google Gemini** or **Groq** to polish bracketed segments using sentence context—useful for particles, homographs, and messy transliterations.
 
-## Live Demo
+## Live App URL
 
-[Your Vercel deployment URL]
+
+https://transliteratordeployed.vercel.app/
+
 
 ## Screenshots
 <img width="1920" height="1080" alt="Screenshot 2026-05-14 011425" src="https://github.com/user-attachments/assets/d5354074-2db5-43f6-8573-2a8ad281baf2" />
