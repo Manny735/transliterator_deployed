@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './App.css';
 import mappings from './data/mappings.json';
-import { fixWithAI } from './aiService';
+import { fixWithAI, prepareHybridAiInput } from './aiService';
 
 const letterMap = {
   'ch': 'ч', 'sh': 'ш', 'ts': 'ц', 'ye': 'е', 'yo': 'ё', 'yu': 'ю', 'ya': 'я',
@@ -36,6 +36,10 @@ function App() {
   const [aiStatus, setAiStatus] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiFixedOutput, setAiFixedOutput] = useState(null);
+  const [aiModelSelection, setAiModelSelection] = useState('gemini-2.5-flash-lite');
+  const [aiErrorDetails, setAiErrorDetails] = useState('');
+  const [showAiErrorDetails, setShowAiErrorDetails] = useState(false);
+  const [abortController, setAbortController] = useState(null);
 
   useEffect(() => {
     const handleGlobalClick = () => setActiveMenu(null);
@@ -59,27 +63,54 @@ function App() {
           type: options.length > 1 ? 'multi' : 'exact',
           value: selectedValue + punctuation,
           options: options,
-          id: uniqueId
+          id: uniqueId,
+          latin: cleanWord,
         };
       }
       return {
         type: 'fallback',
         value: transliterateFallback(cleanWord) + punctuation,
-        id: index
+        id: index,
+        latin: cleanWord,
       };
     });
   }, [inputText, selections]);
 
+  const getAiInvokeParams = (selection) => {
+    if (selection === 'groq') {
+      return { provider: 'groq', modelId: undefined };
+    }
+    return { provider: 'google', modelId: selection };
+  };
+
   const handleAiFix = async () => {
-    const currentCyrillic = translatedWords.map(w => w.value).join('');
+    const controller = new AbortController();
+    setAbortController(controller);
+    const hybridPrepared = prepareHybridAiInput(translatedWords);
+    const { provider, modelId } = getAiInvokeParams(aiModelSelection);
+    setAiErrorDetails('');
+    setShowAiErrorDetails(false);
     setIsAiLoading(true);
     try {
-        const result = await fixWithAI(currentCyrillic, setAiStatus);
-        if (result) setAiFixedOutput(result);
-    } catch (err) {
-        setAiStatus('API Connection Error');
+      const result = await fixWithAI(hybridPrepared, setAiStatus, provider, modelId, controller);
+      if (result.ok) {
+        setAiErrorDetails('');
+        if (result.text) setAiFixedOutput(result.text);
+      } else {
+        setAiErrorDetails(result.technicalDetails);
+      }
     } finally {
-        setIsAiLoading(false);
+      setIsAiLoading(false);
+      setAbortController(null);
+    }
+  };
+
+  const handleStop = () => {
+    if (abortController) {
+      abortController.abort();
+      setIsAiLoading(false);
+      setAiStatus('Cancelled');
+      setAbortController(null);
     }
   };
 
@@ -111,6 +142,8 @@ function App() {
             setInputText(e.target.value);
             setAiFixedOutput(null);
             setAiStatus('');
+            setAiErrorDetails('');
+            setShowAiErrorDetails(false);
           }}
         />
 
@@ -149,8 +182,36 @@ function App() {
           
           <div className="button-group">
             {inputText && !aiFixedOutput && (
-              <button className="ai-button" onClick={handleAiFix} disabled={isAiLoading}>
-                {isAiLoading ? "Waiting..." : "✨ Test AI"}
+              <div className="model-select-wrapper">
+                <span className="model-select-label">Model</span>
+                <select
+                  className="model-select"
+                  value={aiModelSelection}
+                  onChange={(e) => setAiModelSelection(e.target.value)}
+                  disabled={isAiLoading}
+                  aria-label="AI model"
+                >
+                  <option value="gemini-2.5-flash-lite">
+                    Google: Gemini 2.5 Flash Lite
+                  </option>
+                  <option value="groq">Groq: Llama 3.3</option>
+                  <option value="gemini-3-flash-preview">
+                    Google: Gemini 3 Flash Preview
+                  </option>
+                  <option value="gemini-3.1-flash-lite-preview">
+                    Google: Gemini 3.1 Flash Lite Preview
+                  </option>
+                </select>
+              </div>
+            )}
+            {inputText && !aiFixedOutput && isAiLoading && (
+              <button className="stop-button" onClick={handleStop}>
+                ⏹ Stop
+              </button>
+            )}
+            {inputText && !aiFixedOutput && !isAiLoading && (
+              <button className="ai-button" onClick={handleAiFix}>
+                ✨ AI Fix
               </button>
             )}
             {inputText && (
@@ -159,6 +220,26 @@ function App() {
               </button>
             )}
           </div>
+
+          {aiErrorDetails && (
+            <div className="error-container">
+              <p className="error-message">{aiStatus}</p>
+              <button
+                type="button"
+                className="error-toggle-btn"
+                onClick={() => setShowAiErrorDetails((v) => !v)}
+              >
+                {showAiErrorDetails
+                  ? 'Hide Technical Details'
+                  : 'Show Technical Details'}
+              </button>
+              {showAiErrorDetails && (
+                <pre className="error-details">
+                  {aiErrorDetails}
+                </pre>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
