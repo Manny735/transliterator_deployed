@@ -39,6 +39,30 @@ https://transliteratordeployed.vercel.app/
 - **Latin → Cyrillic word mappings** — Bundled as `src/data/mappings.json` in this repository.
 - **AI providers** — [Google AI / Gemini documentation: https://ai.google.dev/docs ] · [Groq API documentation: https://console.groq.com/docs ]
 
+## Setup / Running Locally
+
+1. **Clone** this repository and open a terminal in the project root.
+2. **Install dependencies:**  
+   `npm install`
+3. **Environment variables** — Create a `.env` file in the project root (do not commit it; it is listed in `.gitignore`):
+
+   ```env
+   VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+   VITE_SUPABASE_ANON_KEY=your_anon_public_key
+   ```
+
+   The **anon** key is safe for browser use. Groq and Gemini keys belong only in **Supabase Edge Function secrets** (`GROQ_API_KEY`, `GEMINI_API_KEY`), not in `.env` for the Vite app.
+
+4. **Supabase** — Deploy or use the existing `fix-cyrillic` function under `supabase/functions/fix-cyrillic/` and set the secrets above in the Supabase dashboard (or CLI).
+
+5. **Run the dev server:**  
+   `npm run dev`  
+   Then open the URL shown in the terminal (typically `http://localhost:5173`).
+
+6. **Production build (optional check):**  
+   `npm run build`  
+   Output is written to `dist/`. Preview locally with `npm run preview`.
+
 
 ## Known Issues
 
